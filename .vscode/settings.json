@@ -1,6 +1,6 @@
 {
-  "python.pythonPath": "${workspaceFolder}/env/bin/python3",
-  "editor.formatOnSave": true,
+  "python.pythonPath": "env\\Scripts\\python.exe",
+  "editor.formatOnSave": false,
   "python.linting.pycodestyleEnabled": true,
   "python.linting.pylintEnabled": true,
   "python.linting.pylintPath": "pylint",
