@@ -16,9 +16,10 @@
     {% endfor %}
     {% endif %}
     
-    {% include 'modal.html' %}
     {% block content  %}
     {% endblock content %}
+    {% block extra_body %}
+    {% endblock %}
     {% include 'footer.html' %}
     {% include 'scripts.html' %}
 </body>
