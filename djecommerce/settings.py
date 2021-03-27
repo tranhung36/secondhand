@@ -1,5 +1,6 @@
 import os
 
+
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 
 DEBUG = True
@@ -17,6 +18,8 @@ INSTALLED_APPS = [
     'core',
     'crispy_forms',
 
+    'cities_light',  # pip install django-cities-light
+    'smart_selects',  # pip install django-smart-selects
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -94,3 +97,9 @@ SITE_ID = 1
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 LOGIN_REDIRECT_URL = '/'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+CITIES_LIGHT_TRANSLATION_LANGUAGES = ['vie', 'vi']
+CITIES_LIGHT_INCLUDE_COUNTRIES = ['VN']
+CITIES_LIGHT_INCLUDE_CITY_TYPES = ['PPL', 'PPLA', 'PPLA2', 'PPLA3',
+                                   'PPLA4', 'PPLC', 'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT', ]
+

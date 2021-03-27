@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.shortcuts import reverse
 from django.db import models
+from cities_light.models import City, Region, SubRegion
+from smart_selects.db_fields import ChainedForeignKey
 
 # List categories item
 CATEGORY_CHOICES = (
@@ -49,7 +51,7 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f'{self.quantity} of {self.item.title}'
-    
+
     def get_total_item_price(self):
         return self.quantity * self.item.price
 
@@ -72,6 +74,8 @@ class Order(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
     ordered_date = models.DateTimeField()
     ordered = models.BooleanField(default=False)
+    billing_address = models.ForeignKey(
+        'BillingAddress', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
@@ -81,3 +85,16 @@ class Order(models.Model):
         for order_item in self.items.all():
             total += order_item.get_final_price()
         return total
+
+
+class BillingAddress(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=12)
+    stress_address = models.CharField(max_length=100)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    subregion = ChainedForeignKey(
+        SubRegion, on_delete=models.CASCADE, chained_field='region', chained_model_field='region')
+
+    def __str__(self):
+        return self.user.username

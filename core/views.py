@@ -4,12 +4,53 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from .forms import CheckoutForm
 from django.views.generic import ListView, DetailView, View
-from .models import Item, OrderItem, Order
+from .models import Item, OrderItem, Order, BillingAddress
 
 
-def checkout(request):
-    return render(request, 'checkout.html')
+class CheckoutView(View):
+
+    def get(self, *args, **kwargs):
+        form = CheckoutForm()
+        context = {
+            'form': form
+        }
+        return render(self.request, "checkout.html", context)
+
+    def post(self, *args, **kwargs):
+        form = CheckoutForm(self.request.POST or None)
+        print(self.request.POST)
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            if form.is_valid():
+                print(form.cleaned_data)
+                phone_number = form.cleaned_data.get('phone_number')
+                region = form.cleaned_data.get('region')
+                subregion = form.cleaned_data.get('subregion')
+                street_address = form.cleaned_data.get('street_address')
+                payment_option = form.cleaned_data.get('payment_option')
+                billing_address = BillingAddress(
+                    user=self.request.user,
+                    phone_number=phone_number,
+                    stress_address=stress_address,
+                    region=region,
+                    subregion=subregion
+                )
+                billing_address.save()
+                order.billing_address = billing_address
+                order.save()
+                return redirect('core:checkout')
+            messages.warning(self.request, "Fail checkout")
+            return redirect('core:checkout')
+        except ObjectDoesNotExist:
+            messages.error(self.request, 'You do not have an active order')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class PaymentView(View):
+    def get(self, *args, **kwargs):
+        return render(self.request, 'payment.html')
 
 
 class HomeView(ListView):
@@ -39,7 +80,7 @@ class ShopView(ListView):
 class ItemDetailView(DetailView):
     model = Item
     template_name = 'detail.html'
-    
+
 
 @login_required
 def add_to_cart(request, slug):
@@ -68,6 +109,7 @@ def add_to_cart(request, slug):
         order.items.add(order_item)
         messages.info(request, "This item was added to your cart.")
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 
 @login_required
 def remove_from_cart(request, slug):

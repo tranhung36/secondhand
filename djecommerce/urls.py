@@ -7,6 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', include('core.urls', namespace='core')),
+    path('chaining/', include('smart_selects.urls')),
 ]
 
 if settings.DEBUG:
