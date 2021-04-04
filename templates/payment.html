@@ -1,6 +1,125 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
+
+{% block extra_head %}
+<style>
+/* Variables */
+* {
+  box-sizing: border-box;
+}
+form {
+  width: 30vw;
+  min-width: 500px;
+  align-self: center;
+  box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+    0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+  border-radius: 7px;
+  padding: 40px;
+}
+
+input {
+  border-radius: 6px;
+  margin-bottom: 6px;
+  padding: 12px;
+  border: 1px solid rgba(50, 50, 93, 0.1);
+  height: 44px;
+  font-size: 16px;
+  width: 100%;
+  background: white;
+}
+
+.result-message {
+  line-height: 22px;
+  font-size: 16px;
+}
+
+.result-message a {
+  color: rgb(89, 111, 214);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hidden {
+  display: none;
+}
+
+#card-error {
+  color: rgb(105, 115, 134);
+  text-align: left;
+  font-size: 13px;
+  line-height: 17px;
+  margin-top: 12px;
+}
+
+#card-element {
+  border-radius: 4px 4px 0 0 ;
+  padding: 12px;
+  border: 1px solid rgba(50, 50, 93, 0.1);
+  height: 44px;
+  width: 100%;
+  background: white;
+}
+
+#payment-request-button {
+  margin-bottom: 32px;
+}
+
+/* Buttons and links */
+#stripeBtn {
+  background:	#000000;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  border-radius: 0 0 4px 4px;
+  border: 0;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: block;
+  transition: all 0.2s ease;
+  box-shadow: 0px 4px 5.5px 0px rgba(0, 0, 0, 0.07);
+  width: 100%;
+  margin-top: 15px;
+}
+button:hover {
+  filter: contrast(115%);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@-webkit-keyframes loading {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes loading {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  form {
+    width: 80vw;
+  }
+}
+
+</style>
+{% endblock extra_head %}
+
 {% block content %}
 
 <body>
@@ -77,65 +196,90 @@
       </section>
       <section class="py-5">
         <!-- BILLING ADDRESS-->
-        <h2 class="h5 text-uppercase mb-4">Billing details</h2>
+        <h2 class="h5 text-uppercase mb-4">Payment</h2>
         <div class="row">
           <div class="col-lg-8">
-            <form action="#" method="POST">
+            <form action="." method="post" id="payment-form">
               {% csrf_token %}
-              <div class="row">
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="first_name">First name</label>
-                  {{ form.first_name }}
+              <div class="form-row">
+                <div id="card-element">
+                  <!-- A Stripe Element will be inserted here. -->
                 </div>
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="lastName">Last name</label>
-                  {{ form.last_name }}
-                </div>
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="email">Email address</label>
-                  {{ form.email }}
-                </div>
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="phone">Phone number</label>
-                  {{ form.phone_number }}
-                </div>
-                {% comment %} <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="city">Town/City</label>
-                  <select class="selectpicker city" id="city" data-width="fit" data-style="form-control form-control-lg"
-                    data-title="Select your city"></select>
-                </div> {% endcomment %}
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="district">Region</label>
-                  {{ form.media.js }}
-                  {{ form.region }}
-                </div>
-                <div class="col-lg-6 form-group">
-                  <label class="text-small text-uppercase" for="state">SubRegion</label>
-                  {{ form.media.js }}
-                  {{ form.subregion }}
-                </div>
-                <div class="col-lg-12 form-group">
-                  <label class="text-small text-uppercase" for="street_address">Street Address</label>
-                  <input class="form-control form-control-lg" id="street_address" name="street_address" type="text"
-                    placeholder="House number and street name">
-                </div>
-                <div class="col-lg-6 form-group">
-                  {% for value, name in form.fields.payment_option.choices %}
-                  <div class="custom-control custom-radio">
-                    <input class="custom-control-input" id="{{ name }}" value="{{ value }}" type="radio" name="payment_option" required>
-                    <label class="custom-control-label" for="{{ name }}">{{ name }}</label>
-                  </div>
-                  {% endfor %}
-                </div>
-                <div class="col-lg-12 form-group">
-                  <button class="btn btn-dark" type="submit">Place order</button>
-                </div>
+
+                <!-- Used to display Element errors. -->
+                <div id="card-errors" role="alert"></div>
               </div>
+
+              <button id="stripeBtn">Submit Payment</button>
             </form>
           </div>
+          {% include 'order_snippet.html' %}
         </div>
       </section>
     </div>
   </div>
 </body>
 {% endblock content %}
+
+{% block extra_scripts %}
+<script src="https://js.stripe.com/v3/"></script>
+<script nonce="">
+  var stripe = Stripe('pk_test_51IZh9DDI3hcUqmgMLpiuVBNHwL36dwYc7wvnDSgBeDolK3MejpPDvgeYM5aeq07Tci0HcAmpq6wYfpqYaX2wZhVo00CgUMjTCf');
+  var elements = stripe.elements();
+  var style = {
+    base: {
+      color: '#303238',
+      fontSize: '16px',
+      fontFamily: '"Open Sans", sans-serif',
+      fontSmoothing: 'antialiased',
+      '::placeholder': {
+        color: '#CFD7DF',
+      },
+    },
+    invalid: {
+      color: '#e5424d',
+      ':focus': {
+        color: '#303238',
+      },
+    },
+  };
+
+  // Create an instance of the card Element.
+  var card = elements.create('card', {style: style});
+
+  // Add an instance of the card Element into the `card-element` <div>.
+  card.mount('#card-element');
+
+  // Create a token or display an error when the form is submitted.
+  var form = document.getElementById('payment-form');
+  form.addEventListener('submit', function(event) {
+  event.preventDefault();
+
+    stripe.createToken(card).then(function(result) {
+      if (result.error) {
+        // Inform the customer that there was an error.
+        var errorElement = document.getElementById('card-errors');
+        errorElement.textContent = result.error.message;
+      } else {
+        // Send the token to your server.
+        stripeTokenHandler(result.token);
+      }
+    });
+  });
+
+
+  function stripeTokenHandler(token) {
+      // Insert the token ID into the form so it gets submitted to the server
+      var form = document.getElementById('payment-form');
+      var hiddenInput = document.createElement('input');
+      hiddenInput.setAttribute('type', 'hidden');
+      hiddenInput.setAttribute('name', 'stripeToken');
+      hiddenInput.setAttribute('value', token.id);
+      form.appendChild(hiddenInput);
+
+      // Submit the form
+      form.submit();
+  }
+
+</script>
+{% endblock extra_scripts %}

@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html lang="en">
 {% include 'head.html' %}
+{% block extra_head %}
+{% endblock extra_head %}
 
 <body>
     {% include 'navbar.html' %}
@@ -22,6 +24,8 @@
     {% endblock %}
     {% include 'footer.html' %}
     {% include 'scripts.html' %}
+    {% block extra_scripts %}
+    {% endblock extra_scripts %}
 </body>
 
 </html>

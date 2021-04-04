@@ -41,6 +41,9 @@ class Item(models.Model):
     def get_remove_from_cart_url(self):
         return reverse("core:remove-from-cart", kwargs={"slug": self.slug})
 
+    def get_display_price(self):
+        return f'{0:.2f}'.format(self.price / 100)
+
 
 class OrderItem(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -76,6 +79,8 @@ class Order(models.Model):
     ordered = models.BooleanField(default=False)
     billing_address = models.ForeignKey(
         'BillingAddress', on_delete=models.SET_NULL, blank=True, null=True)
+    payment = models.ForeignKey(
+        'Payment', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
@@ -91,10 +96,20 @@ class BillingAddress(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=12)
-    stress_address = models.CharField(max_length=100)
-    region = models.ForeignKey(Region, on_delete=models.CASCADE)
-    subregion = ChainedForeignKey(
-        SubRegion, on_delete=models.CASCADE, chained_field='region', chained_model_field='region')
+    street_address = models.CharField(max_length=100)
+    district = models.CharField(max_length=100)
+    city = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.user.username
+
+
+class Payment(models.Model):
+    stripe_charge_id = models.CharField(max_length=50)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.SET_NULL, blank=True, null=True)
+    amount = models.FloatField()
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.user.username
