@@ -49,3 +49,11 @@ class CheckoutForm(forms.Form):
     }))
     payment_option = forms.ChoiceField(
         widget=forms.RadioSelect, choices=PAYMENT_CHOICES)
+
+
+class CouponForm(forms.Form):
+    code = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': "Enter your coupon",
+        'type': "text"
+    }))

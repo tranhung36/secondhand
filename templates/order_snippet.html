@@ -1,23 +1,32 @@
 <div class="col-lg-4">
     <div class="card border-0 rounded-0 p-lg-4 bg-light">
         <div class="card-body">
-        <h5 class="text-uppercase mb-4">Your order</h5>
-        <ul class="list-unstyled mb-0">
-        {% for order_item in order.items.all %}
-            <li class="d-flex align-items-center justify-content-between"><strong
-                class="small font-weight-bold">{{ order_item.item.title }}</strong>
-                {% if order_item.item.discount_price %}
-                <span class="text-muted small">${{ order_item.get_total_discount_item_price }} (Saving
-                ${{ order_item.get_amount_saved }})</span>
-                {% else %}
-                <span class="text-muted small">${{ order_item.get_total_item_price }}</span>
+            <h5 class="text-uppercase mb-4">Your order</h5>
+            <ul class="list-unstyled mb-0">
+                {% for order_item in order.items.all %}
+                <li class="d-flex align-items-center justify-content-between"><strong
+                        class="small font-weight-bold">{{ order_item.item.title }} x {{ order_item.quantity }}</strong>
+                    {% if order_item.item.discount_price %}
+                    <span class="text-muted small">${{ order_item.get_total_discount_item_price }} (Saving
+                        ${{ order_item.get_amount_saved }})</span>
+                    {% else %}
+                    <span class="text-muted small">${{ order_item.get_total_item_price }}</span>
+                    {% endif %}
+                </li>
+                <li class="border-bottom my-2"></li>
+                {% endfor %}
+                {% if order.coupon %}
+                <li class="d-flex align-items-center justify-content-between"><strong
+                        class="text-uppercase small font-weight-bold">Coupon</strong><span class="text-muted small">-
+                        ${{ order.coupon.amount }} ({{ order.coupon.code }})</span></li>
+                <li class="border-bottom my-2"></li>
                 {% endif %}
-            </li>
-            <li class="border-bottom my-2"></li>
-        {% endfor %}
-        <li class="d-flex align-items-center justify-content-between"><strong
-                class="text-uppercase small font-weight-bold">Total</strong><span>${{ order.get_total }}</span></li>
-        </ul>
+                {% if order.get_total %}
+                <li class="d-flex align-items-center justify-content-between"><strong
+                        class="text-uppercase small font-weight-bold">Total</strong><span>${{ order.get_total }}</span>
+                </li>
+                {% endif %}
+            </ul>
         </div>
     </div>
 </div>

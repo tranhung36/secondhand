@@ -192,7 +192,7 @@
                     <div class="mb-3 position-relative">
                       <div class="badge text-white badge-{{ item.get_label_display }}">New</div><a class="d-block"
                         href="{{ item.get_absolute_url }}"><img class="img-fluid w-100"
-                          src="{% static 'img/product-5.jpg' %}" alt="..."></a>
+                          src="{{ item.image.url }}" alt="..."></a>
                       <div class="product-overlay">
                         <ul class="mb-0 list-inline">
                           <li class="list-inline-item m-0 p-0"><a class="btn btn-sm btn-outline-dark" href="#"><i

@@ -94,7 +94,7 @@
                   <tr>
                     <th class="pl-0 border-0" scope="row">
                       <div class="media align-items-center"><a class="reset-anchor d-block animsition-link"
-                          href="detail.html"><img src="img/product-detail-3.jpg" alt="..." width="70" /></a>
+                          href="{% url 'core:product' order_item.item.slug %}"><img src="{{ order_item.item.image.url }}" alt="..." width="70" /></a>
                         <div class="media-body ml-3"><strong class="h6"><a class="reset-anchor animsition-link"
                               href="{{ order_item.item.get_absolute_url }}">{{ order_item.item.title }}</a></strong>
                         </div>
@@ -158,15 +158,24 @@
                 <ul class="list-unstyled mb-0">
                   <li class="d-flex align-items-center justify-content-between"><strong
                       class="text-uppercase small font-weight-bold">Subtotal</strong><span
-                      class="text-muted small">${{ object.get_total }}</span></li>
+                      class="text-muted small">${{ object.get_subtotal }}</span></li>
                   <li class="border-bottom my-2"></li>
+                  {% if object.coupon %}
+                  <li class="d-flex align-items-center justify-content-between"><strong
+                      class="text-uppercase small font-weight-bold">Coupon</strong><span
+                      class="text-muted small">- ${{ object.coupon.amount }} ({{ object.coupon.code }})</span></li>
+                  <li class="border-bottom my-2"></li>
+                  {% endif %}
+                  {% if object.get_total %}
                   <li class="d-flex align-items-center justify-content-between mb-4"><strong
                       class="text-uppercase small font-weight-bold">Total</strong><span>${{ object.get_total }}</span>
                   </li>
+                  {% endif %}
                   <li>
-                    <form action="#">
+                    <form action="{% url 'core:add-coupon' %}" method="POST">
+                      {% csrf_token %}
                       <div class="form-group mb-0">
-                        <input class="form-control" type="text" placeholder="Enter your coupon">
+                        {{ couponform.code }}
                         <button class="btn btn-dark btn-sm btn-block" type="submit"> <i
                             class="fas fa-gift mr-2"></i>Apply coupon</button>
                       </div>

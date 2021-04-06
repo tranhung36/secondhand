@@ -28,6 +28,7 @@ class Item(models.Model):
     label = models.CharField(choices=LABEL_CHOICES, max_length=1)
     description = models.TextField()
     quantity = models.IntegerField(default=1)
+    image = models.ImageField()
 
     def __str__(self):
         return self.title
@@ -81,14 +82,27 @@ class Order(models.Model):
         'BillingAddress', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey(
         'Payment', on_delete=models.SET_NULL, blank=True, null=True)
+    coupon = models.ForeignKey(
+        'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
+
+    def get_subtotal(self):
+        subtotal = 0
+        for order_item in self.items.all():
+            if order_item.item.discount_price:
+                subtotal += order_item.get_total_discount_item_price()
+            else:
+                subtotal += order_item.get_total_item_price()
+        return subtotal
 
     def get_total(self):
         total = 0
         for order_item in self.items.all():
             total += order_item.get_final_price()
+        if self.coupon:
+            total -= self.coupon.amount
         return total
 
 
@@ -113,3 +127,14 @@ class Payment(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+class Coupon(models.Model):
+    code = models.CharField(max_length=20, unique=True)
+    amount = models.FloatField()
+    valid_from = models.DateTimeField(blank=True, null=True)
+    valid_to = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.code
