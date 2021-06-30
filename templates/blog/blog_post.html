@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<body>
+    <div class="page-holder">
+        <!--  Modal -->
+        <div class="modal fade" id="productView" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body p-0">
+                        <div class="row align-items-stretch">
+                            <div class="col-lg-6 p-lg-0"><a class="product-view d-block h-100 bg-cover bg-center"
+                                    style="background: url(img/product-5.jpg)" href="img/product-5.jpg"
+                                    data-lightbox="productview" title="Red digital smartwatch"></a><a class="d-none"
+                                    href="img/product-5-alt-1.jpg" title="Red digital smartwatch"
+                                    data-lightbox="productview"></a><a class="d-none" href="img/product-5-alt-2.jpg"
+                                    title="Red digital smartwatch" data-lightbox="productview"></a></div>
+                            <div class="col-lg-6">
+                                <button class="close p-4" type="button" data-dismiss="modal" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                                <div class="p-5 my-md-4">
+                                    <ul class="list-inline mb-2">
+                                        <li class="list-inline-item m-0"><i class="fas fa-star small text-warning"></i>
+                                        </li>
+                                        <li class="list-inline-item m-0"><i class="fas fa-star small text-warning"></i>
+                                        </li>
+                                        <li class="list-inline-item m-0"><i class="fas fa-star small text-warning"></i>
+                                        </li>
+                                        <li class="list-inline-item m-0"><i class="fas fa-star small text-warning"></i>
+                                        </li>
+                                        <li class="list-inline-item m-0"><i class="fas fa-star small text-warning"></i>
+                                        </li>
+                                    </ul>
+                                    <h2 class="h4">Red digital smartwatch</h2>
+                                    <p class="text-muted">$250</p>
+                                    <p class="text-small mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing
+                                        elit,ipsum dolor sit amet, consectetur adipiscing elit .
+                                        .</p>
+                                    <div class="row align-items-stretch mb-4">
+                                        <div class="col-sm-7 pr-sm-0">
+                                            <div
+                                                class="border d-flex align-items-center justify-content-between py-1 px-3">
+                                                <span
+                                                    class="small text-uppercase text-gray mr-4 no-select">Quantity</span>
+                                                <div class="quantity">
+                                                    <button class="dec-btn p-0"><i
+                                                            class="fas fa-caret-left"></i></button>
+                                                    <input class="form-control border-0 shadow-0 p-0" type="text"
+                                                        value="1">
+                                                    <button class="inc-btn p-0"><i
+                                                            class="fas fa-caret-right"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-5 pl-sm-0"><a
+                                                class="btn btn-dark btn-sm btn-block h-100 d-flex align-items-center justify-content-center px-0"
+                                                href="cart.html">Add to cart</a></div>
+                                    </div><a class="btn btn-link text-dark p-0" href="#"><i
+                                            class="far fa-heart mr-2"></i>Add to wish list</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="text-center mt-5">
+                <p class="h6 text-uppercase text-primary">NIKE SPORTSWEAR</p>
+                <h2>{{ object.title }}</h1>
+                    <p class="mb-3">{{ object.overview }}</p>
+                    <ul class="list-inline small text-uppercase mb-0">
+                        <li class="list-inline-item align-middle"><img src="#" alt="" class="rounded-circle shadow-sm">
+                        </li>
+                        <li class="list-inline-item text-gray">By</li>
+                        <li class="list-inline-item"><a href="" class="reset-anchor">{{ object.author }}</a></li>
+                        <li class="list-inline-item text-gray small">|</li>
+                        <li class="list-inline-item text-gray small">{{ object.timestamp|date:"d M Y" }}</li>
+                        <li class="list-inline-item text-gray small">|</li>
+                        <li class="list-inline-item text-gray small">{{ object.comment_count }} COMMENT</li>
+                    </ul>
+            </div>
+            <img src="img/category-1.jpg" alt="" class="bg-post mb-5 mt-5" width="100%">
+        </section>
+        <!-- body   -->
+        <section class="slide pt-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-8">
+                    <p>{{ object.content|safe }}</p>
+                        <div class="p-4 bg-light mb-5">
+                            <ul class="list-inline mb-0">
+                            {% for cat in category %}
+                                <li class="list-inline-item mr-2 pr-lg-2">
+                                    <a href="" class="tag reset-anchor">
+                                        <i class="fas fa-bookmark text-primary mr-2" aria-hidden="true">
+                                        </i>
+                                        {{ cat.title }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                        <h3 class="h4 mb-4">Share this post</h3>
+                        <ul class="mb-4 list-inline">
+                            <li class="list-inline-item mr-1 mb-3">
+                                <a href="" class="social-link-share facebook">
+                                    <i class="fab fa-facebook mr-2" aria-hidden="true"></i>
+                                    Facebook
+                                </a>
+                            </li>
+                            <li class="list-inline-item mr-1 mb-3">
+                                <a href="" class="social-link-share twitter">
+                                    <i class="fab fa-twitter mr-2" aria-hidden="true"></i>
+                                    Twitter
+                                </a>
+                            </li>
+                            <li class="list-inline-item mr-1 mb-3">
+                                <a href="" class="social-link-share instagram">
+                                    <i class="fab fa-instagram mr-2" aria-hidden="true"></i>
+                                    Instagram
+                                </a>
+                            </li>
+                        </ul>
+                        <h3 class="h4 mb-4">Leave a comment</h3>
+                        <form action="" class="mb-5">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <input type="text" class="form-control" name="" id="" aria-describedby="helpId"
+                                            placeholder="Fullname">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" class="form-control" name="" id="" aria-describedby="helpId"
+                                            placeholder="Email">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                              <textarea class="form-control form-note" name="" id="" rows="3" placeholder="Leave your email"></textarea>
+                            </div>
+                            <a href="" class="social-link-share">
+                                <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                                Submit your comment
+                            </a>
+                        </form>
+                        <h3 class="mb-4 h4 d-flex align-item-center">
+                            <span>Comments</span>
+                            <span class="text-gray text-small ml-3">3 Comment</span>
+                        </h3>
+                        <ul class="list-unstyled comments">
+                             <li>
+                                 <div class="d-flex mb-4">
+                                     <div class="pr-2 flex-grow-1" style="width: 75px; min-width: 75px;">
+                                         <img src="img/product-8.jpg" alt="" class="rounded-circle shadow-sm img-fluid img-thumnail">
+                                     </div>
+                                     <div class="pl-2">
+                                         <p class="small mb-0 text-primary">15 Aug 2019</p>
+                                         <h5>Hưng buồi</h5>
+                                         <p class="text-muted text-small mb-2">
+                                            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At.
+                                         </p>
+                                         <a href="" class="reset-anchor text-small">
+                                             <i class="fas fa-share mr-2 text-primary" aria-hidden="true"></i>
+                                             <strong>Reply</strong>
+                                         </a>
+                                     </div>
+                                 </div>
+                                 <ul class="list-unstyled">
+                                     <li>
+                                        <div class="d-flex mb-4 pl-5 ml-4">
+                                            <div class="pr-2 flex-grow-1" style="width: 75px; min-width: 75px;">
+                                                <img src="img/product-8.jpg" alt="" class="rounded-circle shadow-sm img-fluid img-thumnail">
+                                            </div>
+                                            <div class="pl-2">
+                                                <p class="small mb-0 text-primary">15 Aug 2019</p>
+                                                <h5>Hưng buồi</h5>
+                                                <p class="text-muted text-small mb-2">
+                                                   Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At.
+                                                </p>
+                                                <a href="" class="reset-anchor text-small">
+                                                    <i class="fas fa-share mr-2 text-primary" aria-hidden="true"></i>
+                                                    <strong>Reply</strong>
+                                                </a>
+                                            </div>
+                                        </div>
+                                     </li>
+                                 </ul>
+                             </li>
+                             <li>
+                                <div class="d-flex mb-4">
+                                    <div class="pr-2 flex-grow-1" style="width: 75px; min-width: 75px;">
+                                        <img src="img/product-8.jpg" alt="" class="rounded-circle shadow-sm img-fluid img-thumnail">
+                                    </div>
+                                    <div class="pl-2">
+                                        <p class="small mb-0 text-primary">15 Aug 2019</p>
+                                        <h5>Hưng buồi</h5>
+                                        <p class="text-muted text-small mb-2">
+                                           Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At.
+                                        </p>
+                                        <a href="" class="reset-anchor text-small">
+                                            <i class="fas fa-share mr-2 text-primary" aria-hidden="true"></i>
+                                            <strong>Reply</strong>
+                                        </a>
+                                    </div>
+                                </div>
+                             </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="mb-5 text-center">
+                            <img src="img/product-11.jpg" width="200px" style="border: 5px solid #fff;" alt=""
+                                class="mb-3 img-circle img-thumnail shadow-sm rounded-circle">
+                            <h3 class="h4">About me</h3>
+                            <p class="text-grey text-small text-muted px-sm-4">Lorem ipsum dolor sit amet consectetur
+                                adipisicing elit. Nemo laborum maiores doloremque laboriosam, officiis in quas
+                                temporibus asperiores quisquam porro minima nostrum voluptatem? Aperiam molestias,
+                                ducimus commodi ipsa eos nam.</p>
+                            <ul class="list-inline text-small mb-0">
+                                <li class="list-inline-item">
+                                    <a href="#" class="icon-link reset-anchor"><i class="fab fa-facebook-f"></i></a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a href="#" class="icon-link reset-anchor"><i class="fab fa-twitter"></i></a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a href="#" class="icon-link reset-anchor"><i class="fab fa-instagram"></i></a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a href="#" class="icon-link reset-anchor"><i class="fab fa-youtube"></i></a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mb-5 text-center">
+                            <a class="category reset-anchor bg-cover bg-center mb-2" href="#"
+                                style="background: url(img/category-1.jpg)">
+                                <p class="category-title text-uppercase small">Trending</p>
+                            </a>
+                            <a class="category reset-anchor bg-cover bg-center mb-2" href="#"
+                                style="background: url(img/category-2.jpg)">
+                                <p class="category-title text-uppercase small">Outfit</p>
+                            </a>
+                            <a class="category reset-anchor bg-cover bg-center" href="#"
+                                style="background: url(img/category-3.jpg)">
+                                <p class="category-title text-uppercase small">Feature</p>
+                            </a>
+                        </div>
+                        <div class="px-4 py-5 bg-light mb-5 text-center">
+                            <h3 class="h5">
+                                <i class="far fa-envelope mr-2" aria-hidden="true"></i>
+                                Join the family
+                            </h3>
+                            <p class="text-gray text-smallsmall text-muted">Lorem ipsum dolor sit amet, consectetur
+                                adipisicing elit, sed do eiusmod.</p>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="" id="" aria-describedby="helpId"
+                                    placeholder="Nhập Email">
+                            </div>
+                            <button class="text-white text-center"
+                                style="background: #000;width: 100%;height: 40px;">Subscribe</button>
+                        </div>
+                        <div class="mb-5">
+                            <h3 class="h5">Latest posts</h3>
+                            <p class="text-gray text-small text-muted">Lorem ipsum dolor sit, consectetur adipisicing
+                                elit, sed do eiusmod.</p>
+                            <ul class="list-unstyled">
+                                <li class="media mb-1">
+                                    <a href="#">
+                                        <img src="img/product-6.jpg" alt="" width="80">
+                                    </a>
+                                    <div class="media-body ml-3">
+                                        <p class="small text-primary text-uppercase mb-0">5 AUG 2018</p>
+                                        <h6 class="mb-1">
+                                            <a href="#" class="reset-anchor">Nike x READYMADE Blazer Mid</a>
+                                        </h6>
+                                        <p class="small text-muted">Lorem ipsum dolor sit, consectetur adipisicing elit,
+                                            sed.</p>
+                                    </div>
+                                </li>
+                                <li class="media mb-1">
+                                    <a href="#">
+                                        <img src="img/product-5.jpg" alt="" width="80">
+                                    </a>
+                                    <div class="media-body ml-3">
+                                        <p class="small text-primary text-uppercase mb-0">5 AUG 2018</p>
+                                        <h6 class="mb-1">
+                                            <a href="#" class="reset-anchor">Nike x READYMADE Blazer Mid</a>
+                                        </h6>
+                                        <p class="small text-muted">Lorem ipsum dolor sit, consectetur adipisicing elit,
+                                            sed.</p>
+                                    </div>
+                                </li>
+                                <li class="media mb-1">
+                                    <a href="#">
+                                        <img src="img/product-7.jpg" alt="" width="80" height="80">
+                                    </a>
+                                    <div class="media-body ml-3">
+                                        <p class="small text-primary text-uppercase mb-0">5 AUG 2018</p>
+                                        <h6 class="mb-1">
+                                            <a href="#" class="reset-anchor">Nike x READYMADE Blazer Mid</a>
+                                        </h6>
+                                        <p class="small text-muted">Lorem ipsum dolor sit, consectetur adipisicing elit,
+                                            sed.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mb-5">
+                            <h3 class="h5">
+                                Follow on Instagram
+                            </h3>
+                            <p class="text-gray text-small text-muted">Lorem ipsum dolor sit amet, consectetur
+                                adipisicing elit, sed do eiusmod.</p>
+                            <div class="row px-3">
+                                <div class="col-3 px-0">
+                                    <a href="" class="instagram-item overlay-hover-dark-sm d-block w-100">
+                                        <div class="overlay-content">
+                                            <img src="img/product-8.jpg" alt="" class="img-fluid">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-3 px-0">
+                                    <a href="" class="instagram-item overlay-hover-dark-sm d-block w-100">
+                                        <div class="overlay-content">
+                                            <img src="img/product-11.jpg" alt="" class="img-fluid">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-3 px-0">
+                                    <a href="" class="instagram-item overlay-hover-dark-sm d-block w-100">
+                                        <div class="overlay-content">
+                                            <img src="img/product-10.jpg" alt="" class="img-fluid">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-3 px-0">
+                                    <a href="" class="instagram-item overlay-hover-dark-sm d-block w-100">
+                                        <div class="overlay-content">
+                                            <img src="img/product-9.jpg" alt="" class="img-fluid">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-3 px-0">
+                                    <a href="" class="instagram-item overlay-hover-dark-sm d-block w-100">
+                                        <div class="overlay-content">
+                                            <img src="img/product-4.jpg" alt="" class="img-fluid">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-3 px-0">
+                                    <a href="" class="instagram-item overlay-hover-dark-sm d-block w-100">
+                                        <div class="overlay-content">
+                                            <img src="img/product-7.jpg" alt="" class="img-fluid">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-3 px-0">
+                                    <a href="" class="instagram-item overlay-hover-dark-sm d-block w-100">
+                                        <div class="overlay-content">
+                                            <img src="img/product-6.jpg" alt="" class="img-fluid">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-3 px-0">
+                                    <a href="" class="instagram-item overlay-hover-dark-sm d-block w-100">
+                                        <div class="overlay-content">
+                                            <img src="img/product-5.jpg" alt="" class="img-fluid">
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+
+{% endblock content %}

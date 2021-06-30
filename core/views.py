@@ -1,17 +1,42 @@
-from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect, reverse
 from django.contrib import messages
+from django.forms import modelformset_factory
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from .forms import CheckoutForm, CouponForm
-from django.views.generic import ListView, DetailView, View
-from .models import Item, OrderItem, Order, BillingAddress, Payment, Coupon
+from .forms import CheckoutForm, CouponForm, RefundForm, CreateItemForm, ImageForm
+from django.views.generic import (
+    ListView,
+    DetailView,
+    View,
+    CreateView,
+    UpdateView,
+    DeleteView
+)
+from .models import (
+    Item,
+    OrderItem,
+    Order,
+    BillingAddress,
+    Payment,
+    Coupon,
+    Refund,
+    Category,
+    SubCategory,
+    Images
+)
 
+import string
+import random
 # stripe
 import stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+def create_ref_code():
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=15))
 
 
 class CheckoutView(View):
@@ -82,13 +107,13 @@ class PaymentView(View):
     def post(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
         token = self.request.POST.get('stripeToken')
-        amount = int(order.get_total() * 100)
+        amount = int(order.get_total() * 1000)
 
         try:
             # phương thức charge trong stripe
             charge = stripe.Charge.create(
                 amount=amount,
-                currency="usd",
+                currency="vnd",
                 source=token
             )
             # Tạo thanh toán
@@ -108,6 +133,7 @@ class PaymentView(View):
             # Chỉ định thanh toán cho đơn hàng
             order.ordered = True
             order.payment = payment
+            order.ref_code = create_ref_code()
             order.save()
 
             messages.success(self.request, "Your order was successful!")
@@ -160,7 +186,8 @@ class CartView(LoginRequiredMixin, View):
             order = Order.objects.get(user=self.request.user, ordered=False)
             context = {
                 'object': order,
-                'couponform': CouponForm()
+                'couponform': CouponForm(),
+                'title': 'Cart'
             }
             return render(self.request, 'cart.html', context)
         except ObjectDoesNotExist:
@@ -173,10 +200,43 @@ class ShopView(ListView):
     template_name = 'shop.html'
     paginate_by = '12'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["object"] = Item.objects.all().count()
+        context["categories"] = Category.objects.all()
+        context["subcategories"] = SubCategory.objects.all()
+        context["title"] = 'Shop'
+        return context
+
+
+class ItemCategoryView(ListView):
+    model = Item
+    template_name = 'category.html'
+    paginate_by = '12'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["object"] = Item.objects.all().count()
+        context["categories"] = Category.objects.all()
+        return context
+
+    def get_queryset(self):
+        self.category = get_object_or_404(
+            SubCategory, slug=self.kwargs['slug'])
+        return Item.objects.filter(category=self.category)
+
 
 class ItemDetailView(DetailView):
     model = Item
     template_name = 'detail.html'
+
+    def get_context_data(self, **kwargs):
+        item = get_object_or_404(Item, slug=self.kwargs['slug'])
+        context = super().get_context_data(**kwargs)
+        context["related_products"] = Item.objects.select_related('category')[
+            :4]
+        context["images"] = Images.objects.filter(item=item)
+        return context
 
 
 @login_required
@@ -276,27 +336,82 @@ class AddCouponView(View):
         now = timezone.now()
         form = CouponForm(self.request.POST or None)
         if form.is_valid():
+            code = form.cleaned_data.get('code')
+            order = Order.objects.get(
+                user=self.request.user, ordered=False)
+            coupon_qs = Coupon.objects.filter(
+                code__iexact=code, valid_from__lte=now, valid_to__gte=now, active=True)
+            order_coupon = Order.objects.filter(
+                coupon=coupon_qs.first(), user=self.request.user)
             try:
-                code = form.cleaned_data.get('code')
-                order = Order.objects.get(
-                    user=self.request.user, ordered=False)
-                coupon_qs = Coupon.objects.filter(
-                    code__iexact=code, valid_from__lte=now, valid_to__gte=now, active=True)
-                order_coupon = Order.objects.filter(
-                    coupon=coupon_qs.first(), user=self.request.user)
-                if order_coupon:
-                    messages.warning(
-                        self.request, "You can't use same coupon again")
-                    return redirect('core:cart')
                 if coupon_qs:
                     order.coupon = coupon_qs[0]
                     order.save()
                     messages.success(self.request, "Successfully added coupon")
                     return redirect('core:cart')
                 else:
-                    messages.error(self.request, "Coupon doesn not exists")
+                    messages.warning(self.request, "Coupon doesn not exists")
                     return redirect('core:cart')
 
             except ObjectDoesNotExist:
                 messages.info(self.request, "You do not have an active order.")
                 return redirect('core:cart')
+
+
+class RequestRefundView(View):
+    def get(self, *args, **kwargs):
+        form = RefundForm()
+        context = {
+            'form': form
+        }
+        return render(self.request, 'request_refund.html', context)
+
+    def post(self, *args, **kwargs):
+        form = RefundForm(self.request.POST)
+        if form.is_valid():
+            ref_code = form.cleaned_data.get('ref_code')
+            message = form.cleaned_data.get('message')
+            email = form.cleaned_data.get('email')
+            try:
+                order = Order.objects.get(ref_code=ref_code)
+                order.refund_requested = True
+                order.save()
+
+                refund = Refund()
+                refund.order = order
+                refund.reason = message
+                refund.email = email
+                refund.save()
+
+                messages.info(self.request, 'Your request was received')
+                return redirect('core:request-refund')
+
+            except ObjectDoesNotExist:
+                messages.warning(self.request, 'This order does not exist')
+                return redirect('core:request-refund')
+
+
+@login_required
+def create_product(request):
+    if request.method == 'POST':
+        form = ImageForm(request.POST or None, request.FILES or None)
+        files = request.FILES.getlist('images')
+        if form.is_valid():
+            author = request.user
+            title = form.cleaned_data['title']
+            price = form.cleaned_data['price']
+            category = form.cleaned_data['category']
+            description = form.cleaned_data['description']
+            size = form.cleaned_data['size']
+            condition_number = form.cleaned_data['condition_number']
+            image = form.cleaned_data['image']
+            item_obj = Item.objects.create(author=author, title=title, price=price, category=category,
+                                           description=description, size=size, condition_number=condition_number, image=image)
+            for f in files:
+                Images.objects.create(item=item_obj, image=f)
+            return redirect('core:product', slug=item_obj.slug)
+        else:
+            print('Form invalid')
+    else:
+        form = ImageForm()
+    return render(request, 'create_product.html', {'form': form})

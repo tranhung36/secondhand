@@ -109,7 +109,9 @@
                         <div class="quantity">
                           <a href="{% url 'core:remove-single-item-from-cart' order_item.item.slug %}"><button class="dec-btn p-0"><i class="fas fa-caret-left"></i></button></a>
                           <input class="form-control form-control-sm border-0 shadow-0 p-0" type="text" value="1" />
+                        {% if order_item.quantity < order_item.item.quantity %}
                           <a href="{% url 'core:add-to-cart' order_item.item.slug %}"><button class="inc-btn p-0"><i class="fas fa-caret-right"></i></button></a>
+                        {% endif %}
                         </div>
                       </div>
                     </td>

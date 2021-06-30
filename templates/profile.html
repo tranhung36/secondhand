@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+{% block content %}
+
+<body>
+  <div class="page-holder">
+    <!-- HERO SECTION-->
+    <div class="container-fluid section">
+      <div class="section-overview">
+        <div class="row section-overview-row">
+          <div class="col-sm-2">
+            <div class="section-overview-col-left">
+              <div class="category-title">
+                <h5>CATEGORIES</h5>
+              </div>
+              <div class="category-content">
+                {% for c in cat %}
+                <div class="category-fashion">
+                  <h5>{{ c.name }}</h5>
+                </div>
+                <ul class="categories-fashion-list">
+                  {% for sub in c.subcategory.all|slice:"5" %}
+                  <li class="fashion-item">
+                    <a href="">{{ sub.name }}</a>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% endfor %}
+            </div>
+            <div class="col-sm-8">
+              <div class="section-overview-col-center">
+                <!-- bảng thống kê -->
+                <div class="overview-center-statistics">
+                  <div class="overview-center-statistics-main">
+                    <div class="statistics-card">
+                      <div class="statistics-card-value">
+                        <span>{{ item_owner.profile.products.count }}</span>
+                      </div>
+                      <div class="statistics-card-name">
+                        <i class="fas fa-shopping-basket icon-card-name"></i>
+                        <p>products</p>
+                      </div>
+                    </div>
+                    <div class="statistics-card">
+                      <div class="statistics-card-value">
+                        <span>10</span>
+                      </div>
+                      <div class="statistics-card-name">
+                        <i class="fas fa-user-plus icon-card-name"></i>
+                        <p>following</p>
+                      </div>
+                    </div>
+                    <div class="statistics-card">
+                      <div class="statistics-card-value">
+                        <span>02</span>
+                      </div>
+                      <div class="statistics-card-name">
+                        <i class="fas fa-user-friends icon-card-name"></i>
+                        <p>followers</p>
+                      </div>
+                    </div>
+                    <div class="statistics-card">
+                      <div class="statistics-card-value">
+                        <span>20</span>
+                      </div>
+                      <div class="statistics-card-name">
+                        <i class="far fa-star icon-card-name"></i>
+                        <p>reviews </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- section product -->
+
+                <div class="overview-center-product">
+                  <div class="overview-center-product-deck">
+                    {% for obj in object_list %}
+                    <a href="{{ obj.get_absolute_url }}">
+                      <div class="card text-left product-card">
+                        <img class="card-img-top product-card-img" src="{{ obj.image.url }}" alt="">
+                        <div class="card-body product-card-body">
+                          <h4 class="card-title product-card-title">
+                            <p>{{ obj.title }}</p>
+                          </h4>
+                          <div class="card-text product-card-text">
+                            <p>price :&nbsp;&nbsp;&nbsp;</p>
+                            <span>{{ obj.price }}&nbsp;VND</span>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-2">
+              <div class="section-overview-col-right">
+                <div class="block-info">
+                  <div class="block-info-above">
+                    <div class="block-info-above-backgroud"
+                      style="background-image: url(img/background-custom-info.jpg);"></div>
+                    <div class="block-info-above-span"></div>
+                    <div class="row block-info-row">
+                      <div class="col-sm-4 block-info-left">
+                        <div class="info-frame-avatar">
+                          <img src="." alt="" class="img-avatar">
+                        </div>
+                      </div>
+                      <div class="col-sm-8 block-info-right">
+                        <div class="block-info-name">
+                          <span class="name-text"> {% if item_owner.profile.full_name %}
+                          {{ item_owner.profile.full_name }}
+                          {% else %}
+                          {{ item_owner.username }}
+                          {% endif %} </span>
+                        </div>
+                        <div class="block-info-box-btn">
+                          <div class="info-group-btn">
+                            <div class="btn btn-follow">
+                              <i class="fas fa-plus icon-btn icon-follow"></i>
+                              <div class="text">follow</div>
+                            </div>
+                            <div class="btn btn-chat">
+                              <i class="far fa-comment icon-btn icon-chat"></i>
+                              <div class="text">chat</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="block-info-below">
+                    <div class="block-info-intro">
+                      <div class="intro-text">
+                        <span>
+                          {{item_owner.profile.description}}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="block-info-contact">
+                      <div class="info-contact-list">
+                        <div class="contact-list-item item-phone">
+                          <p class="item-name">Phone&nbsp;:&nbsp;</p>
+                          <span class="item-value">{{ item_owner.profile.phone_number }}</span>
+                        </div>
+                        <div class="contact-list-item item-address">
+                          <p class="item-name">Address&nbsp;:&nbsp;</p>
+                          <span class="item-value"> {{ item_owner.profile.address }}</span>
+                        </div>
+                        <div class="contact-list-item item-date">
+                          <p class="item-name">Date&nbsp;:&nbsp;</p>
+                          <span class="item-value">{{ item_owner.profile.date_join|date:"d/m/Y" }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="block-rating">
+                  <div class="rating-comment">
+                    <div class="row rating-comment-row">
+                      <div class="col-sm-3 user-comment">
+                        <div class="user-comment-frame">
+                          <img src="img/product-6.jpg" class="img-user-comment" alt="">
+                        </div>
+                      </div>
+                      <div class="col-sm-9 coment-content">
+                        <div class="user-name-comment">Ngọc Hải</div>
+                        <span class="content-text"> Doloribus esse repellendus unde? Lorem, ipsum dolor sit amet
+                          consectetur adipisicing elit. Accusamus, repellendus voluptate. Ab et nesciunt consequuntur
+                          debitis iure quos aliquid assumenda culpa ad necessitatibus, repellendus hic deleniti
+                          molestiae tempora! Architecto, eligendi?</span>
+                      </div>
+                    </div>
+                    <div class="row rating-comment-row">
+                      <div class="col-sm-3 user-comment">
+                        <div class="user-comment-frame">
+                          <img src="img/product-6.jpg" class="img-user-comment" alt="">
+                        </div>
+                      </div>
+                      <div class="col-sm-9 coment-content">
+                        <div class="user-name-comment">Ngọc Hải</div>
+
+                        <span class="content-text"> Doloribus esse repellendus unde? Lorem, ipsum dolor sit amet
+                          consectetur adipisicing elit. Accusamus, repellendus voluptate. Ab et nesciunt consequuntur
+                          debitis iure quos aliquid assumenda culpa ad necessitatibus, repellendus hic deleniti
+                          molestiae tempora! Architecto, eligendi?</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="btn-show-more-rating">
+                  <p>See more comment...</p>
+                </div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- button scroll to top -->
+      <div class="fixed-bottom ml-auto box-btn-backtop">
+        <i class="fas fa-angle-up icon-backtotop"></i>
+      </div>
+</body>
+
+{% endblock content %}

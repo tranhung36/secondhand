@@ -2,7 +2,11 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{% block head_title %}{% endblock %}</title>
+    {% if title %}
+    <title>Boutique - {{ title }}</title>
+    {% else %}
+    <title>Boutique</title>
+    {% endif %}
     {% block extra_head %}
     {% endblock %}
     <meta name="description" content="">
@@ -28,6 +32,8 @@
     <link rel="stylesheet" href="{% static 'css/style.default.css' %}" id="theme-stylesheet">
     <!-- Custom stylesheet - for your changes-->
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom2.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap-social.css' %}">
     <!-- Favicon-->
     <link rel="shortcut icon" href="{% static 'img/favicon.png' %}">
     <!-- Tweaks for older IEs-->

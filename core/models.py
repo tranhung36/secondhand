@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.shortcuts import reverse
 from django.db import models
-from cities_light.models import City, Region, SubRegion
 from smart_selects.db_fields import ChainedForeignKey
+from django.utils.text import slugify
+from PIL import Image
+
 
 # List categories item
 CATEGORY_CHOICES = (
@@ -11,27 +13,68 @@ CATEGORY_CHOICES = (
     ('A', 'Accessories'),
     ('W', 'Watches')
 )
-# List label item (sale, new, sold)
+# List label item (new, used)
 LABEL_CHOICES = (
-    ('I', 'info'),
-    ('P', 'primary'),
-    ('D', 'danger')
+    ('N', 'New'),
+    ('U', 'Used')
 )
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=50, db_index=True)
+    slug = models.SlugField(unique=True, db_index=True, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = 'categories'
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = self.slug or slugify(self.name)
+        super(Category, self).save(*args, **kwargs)
+
+
+class SubCategory(models.Model):
+    category = models.ForeignKey(
+        Category, related_name='subcategory', on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, db_index=True)
+    slug = models.SlugField(unique=True, db_index=True, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = 'sub categories'
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = self.slug or slugify(self.name)
+        super(SubCategory, self).save(*args, **kwargs)
 
 
 class Item(models.Model):
     title = models.CharField(max_length=100)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True, blank=True, null=True)
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
-    category = models.CharField(choices=CATEGORY_CHOICES, max_length=1)
-    label = models.CharField(choices=LABEL_CHOICES, max_length=1)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    category = models.ForeignKey(
+        SubCategory, on_delete=models.CASCADE)
+    label = models.CharField(choices=LABEL_CHOICES,
+                             max_length=1, blank=True, null=True)
     description = models.TextField()
+    size = models.IntegerField(default=42)
     quantity = models.IntegerField(default=1)
+    condition_number = models.PositiveIntegerField()
     image = models.ImageField()
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        self.slug = self.slug or slugify(self.title)
+        super(Item, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("core:product", kwargs={"slug": self.slug})
@@ -43,7 +86,25 @@ class Item(models.Model):
         return reverse("core:remove-from-cart", kwargs={"slug": self.slug})
 
     def get_display_price(self):
-        return f'{0:.2f}'.format(self.price / 100)
+        return self.price
+
+
+class Images(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='product_images')
+
+    def __str__(self):
+        return self.item.title
+
+    def save(self, *args, **kwargs):
+        super(Images, self).save(*args, **kwargs)  # saving image first
+
+        img = Image.open(self.image.path)  # Open image using self
+
+        if img.height > 774 or img.width > 808:
+            new_img = (774, 808)
+            img.thumbnail(new_img)
+            img.save(self.image.path)  # saving image at the same path
 
 
 class OrderItem(models.Model):
@@ -74,6 +135,7 @@ class OrderItem(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
+    ref_code = models.CharField(max_length=15)
     items = models.ManyToManyField(OrderItem)
     start_date = models.DateTimeField(auto_now_add=True)
     ordered_date = models.DateTimeField()
@@ -84,6 +146,10 @@ class Order(models.Model):
         'Payment', on_delete=models.SET_NULL, blank=True, null=True)
     coupon = models.ForeignKey(
         'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
+    being_delivered = models.BooleanField(default=False)
+    received = models.BooleanField(default=False)
+    refund_requested = models.BooleanField(default=False)
+    refund_granted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
@@ -101,7 +167,7 @@ class Order(models.Model):
         total = 0
         for order_item in self.items.all():
             total += order_item.get_final_price()
-        if self.coupon:
+        if self.coupon and total > self.coupon.amount:
             total -= self.coupon.amount
         return total
 
@@ -138,3 +204,13 @@ class Coupon(models.Model):
 
     def __str__(self):
         return self.code
+
+
+class Refund(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    reason = models.TextField()
+    accepted = models.BooleanField(default=False)
+    email = models.EmailField()
+
+    def __str__(self):
+        return f'{self.pk}'

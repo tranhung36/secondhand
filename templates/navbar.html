@@ -16,18 +16,21 @@
                         <!-- Link--><a class="nav-link" href="{% url 'core:shop' %}">Shop</a>
                     </li>
                     <li class="nav-item">
-                        <!-- Link--><a class="nav-link" href="#">Blog</a>
+                        <!-- Link--><a class="nav-link" href="{% url 'blog:blog' %}">Blog</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ml-auto">
                     {% if request.user.is_authenticated %}
+                    <li class="nav-item"><a href="{% url 'core:create-product' %}" class="nav-link icon-nav search" title="Thêm sản phẩm"><i
+                    class="fas fa-plus" aria-hidden="true"></i></i></a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'core:cart' %}"> <i
                                 class="fas fa-dolly-flatbed mr-1 text-gray"></i>Cart<small
                                 class="text-gray"> ({{ request.user|cart_item_count }})</small></a></li>
                     <li class="nav-item"><a class="nav-link" href="#"> <i class="far fa-heart mr-1"></i><small
                                 class="text-gray"> (0)</small></a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'account_logout' %}"> <i
-                                class="fas fa-user-alt mr-1 text-gray"></i>Logout</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'user:profile' user.username %}"> <i
+                                class="fas fa-user-alt mr-1 text-gray"></i> Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'account_logout' %}">Logout</a></li>
                     {% else %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'account_login' %}"> <i
                                 class="fas fa-user-alt mr-1 text-gray"></i>Login</a></li>
